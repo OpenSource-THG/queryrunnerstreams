@@ -1,0 +1,26 @@
+buildscript {
+	apply from: 'https://artifactory.io.thehut.local:443/artifactory/plugins-release-local/thg/thg-gradle-plugin/1.0.0/thg-gradle-plugin-1.0.0.gradle', to: buildscript
+}
+
+apply plugin: 'com.thehut.thg-gradle-plugin'
+
+
+dependencies {
+	testCompile 'junit:junit:4.12'
+}
+
+artifactory {
+	publish {
+		defaults {
+			publications('mavenJava')
+		}
+	}
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact jar
+		}
+	}
+}

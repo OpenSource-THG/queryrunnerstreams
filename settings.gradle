@@ -1,0 +1,6 @@
+/*pluginRepositories {
+    maven {
+        url 'https://artifactory.io.thehut.local:443/artifactory/plugins-release'
+    }
+    gradlePluginPortal()
+}*/
