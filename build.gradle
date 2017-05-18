@@ -4,7 +4,6 @@ buildscript {
 
 apply plugin: 'com.thehut.thg-gradle-plugin'
 
-
 dependencies {
 	testCompile 'junit:junit:4.12'
 }
