@@ -8,11 +8,6 @@ trim_trailing_whitespace = true
 # Java Properties
 [*.properties]
 trim_trailing_whitespace = false
-# Java files
-[*.java]
-charset = utf-8
-indent_size = 2
-indent_style = space
 # XML files
 [*.xml]
 charset = utf-8
