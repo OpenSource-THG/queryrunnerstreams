@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 set -euo pipefail
 
 while getopts "t:" o; do
@@ -65,10 +64,14 @@ git pull origin master
 require_clean_work_tree
 
 echo "Calculating tags"
-CURRENT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
-NEW_TAG=$($DIR/semver.sh bump $TYPE $CURRENT_TAG)
+if `git rev-list --tags --max-count=1 2>/dev/null`; then
+    CURRENT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+    echo "Current tag $CURRENT_TAG"
+    NEW_TAG=$($DIR/semver.sh bump $TYPE $CURRENT_TAG)
+else
+    NEW_TAG="1.0.0"
+fi
 
-echo "Current tag $CURRENT_TAG"
 echo "New tag $NEW_TAG"
 
 echo "Merging changes into master"

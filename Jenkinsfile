@@ -18,12 +18,7 @@ node {
   }
 
   stage('Build') {
-    try {
-      sh './gradlew clean -Pfindbugs.xml build'
-    } finally {
-      step([$class: 'JUnitResultArchiver', testResults: 'build/test-results/*.xml'])
-      step([$class: 'FindBugsPublisher', pattern: 'build/reports/findbugs/main.xml'])
-    }
+    sh './gradlew clean build'
   }
 
   def selectedType
