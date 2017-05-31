@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+dirty_status=0
+
+if [ -e "./.git/MERGE_HEAD" ]; then
+  exit
+fi
+
+# Get all the scripts in our pre-commit-scripts directory
+for script in $(find ./.githooks/pre-commit-scripts -type f); do
+  # Check the script is executable
+  if [ -x $script ]; then
+    # If it is, run it
+    $script
+    # Capture the return code of our script, so we can exit with the proper code
+    # afterwards (but still run all the scripts).
+    return_code=$?
+    if [ $return_code != 0 ]; then
+      dirty_status=1
+    fi
+  fi
+done
+
+exit $dirty_status
