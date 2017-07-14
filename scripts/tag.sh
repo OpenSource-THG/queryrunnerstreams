@@ -64,11 +64,13 @@ git pull origin master
 require_clean_work_tree
 
 echo "Calculating tags"
-if `git rev-list --tags --max-count=1 2>/dev/null`; then
-    CURRENT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+CURRENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null)
+if [ ! -z "$CURRENT_TAG" ]
+then
     echo "Current tag $CURRENT_TAG"
     NEW_TAG=$($DIR/semver.sh bump $TYPE $CURRENT_TAG)
 else
+    echo "No current tag found"
     NEW_TAG="1.0.0"
 fi
 
