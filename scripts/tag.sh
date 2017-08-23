@@ -64,7 +64,7 @@ git pull origin master
 require_clean_work_tree
 
 echo "Calculating tags"
-CURRENT_TAG=$(git tag 2>/dev/null)
+CURRENT_TAG=$(git describe --abbrev=0 --tags 2>/dev/null)
 if [ ! -z "$CURRENT_TAG" ]
 then
     echo "Current tag $CURRENT_TAG"
