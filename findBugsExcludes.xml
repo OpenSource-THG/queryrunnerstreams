@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <!-- IntelliJs default hashCode method triggers this warning -->
+    <Method name="hashCode" />
+    <Bug code="USBR" />
+  </Match>
+  <Match>
+    <!-- Allow unused methods (post and put) in the main class -->
+    <Class name="com.thehutgroup.fuzzyduck.FuzzyDuck" />
+    <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+  </Match>
+  <Match>
+    <!-- We want to load config files from a provided param for dev -->
+    <Class name="com.thehutgroup.fuzzyduck.server.AppConfiguration" />
+    <Bug pattern="PATH_TRAVERSAL_IN" />
+  </Match>
+  <Match>
+    <!-- This issue is being managed in Themis Monitoring directly -->
+    <Bug pattern="CRLF_INJECTION_LOGS" />
+  </Match>
+  <Match>
+    <!-- Unneeded boxing or bools often results in more readable code -->
+    <Bug pattern="NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" />
+  </Match>
+  <Match>
+    <!-- Don't require every class to implement a toString method -->
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING" />
+  </Match>
+  <Match>
+    <!-- Allow exceptions with fixed strings -->
+    <Bug pattern="WEM_WEAK_EXCEPTION_MESSAGING" />
+  </Match>
+  <Match>
+    <!-- Allow writing to static fields -->
+    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+  </Match>
+  <Match>
+    <!-- Allow calling the same method twice to avoid unneeded intermediary variables -->
+    <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
+  </Match>
+  <Match>
+    <!-- Allows for extension of methods which at present only need to be private -->
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD" />
+  </Match>
+  <Match>
+    <!-- Allow execption softening for use in lambdas -->
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" />
+  </Match>
+  <Match>
+    <!-- Allow concatenation in logs -->
+    <Bug pattern="LO_APPENDED_STRING_IN_FORMAT_STRING" />
+  </Match>
+  <Match>
+    <!-- Allow us to pass loggers -->
+    <Bug pattern="LO_SUSPECT_LOG_PARAMETER" />
+  </Match>
+  <Match>
+    <!-- Allow us to modify a variable in place and return it -->
+    <Bug pattern="CFS_CONFUSING_FUNCTION_SEMANTICS" />
+  </Match>
+  <Match>
+    <!-- This seems to be reporting erroneously -->
+    <Bug pattern="PME_POOR_MANS_ENUM" />
+  </Match>
+  <Match>
+    <!-- This to error when legitimately parsing urls -->
+    <Bug pattern="STT_STRING_PARSING_A_FIELD" />
+  </Match>
+</FindBugsFilter>

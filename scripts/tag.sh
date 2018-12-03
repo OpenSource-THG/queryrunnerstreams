@@ -54,9 +54,9 @@ require_clean_work_tree () {
 
 echo "$(pwd)"
 
-echo "Pulling develop and verifying it is clean..."
-git pull origin develop
-require_clean_work_tree
+#echo "Pulling develop and verifying it is clean..."
+#git pull origin develop
+#require_clean_work_tree
 
 echo "Verifying that master is clean..."
 git checkout master
@@ -76,8 +76,8 @@ fi
 
 echo "New tag $NEW_TAG"
 
-echo "Merging changes into master"
-git merge origin/develop
+#echo "Merging changes into master"
+#git merge origin/develop
 
 git tag -a $NEW_TAG -m "$NEW_TAG"
 git push origin $NEW_TAG
