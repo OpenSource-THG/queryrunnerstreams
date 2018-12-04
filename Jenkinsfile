@@ -8,6 +8,10 @@ node {
     sh 'git pull'
   }
 
+  stage('Test') {
+    sh './gradlew clean test check'
+  }
+
   stage('Build') {
     sh './gradlew clean build'
   }
