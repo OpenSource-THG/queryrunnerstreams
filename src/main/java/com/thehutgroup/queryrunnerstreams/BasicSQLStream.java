@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 public class BasicSQLStream<T> {
   private final Stream<T> stream;
 
-  private BasicSQLStream(Stream<T> stream) {
+  public BasicSQLStream(Stream<T> stream) {
     this.stream = stream;
   }
 
@@ -23,7 +23,7 @@ public class BasicSQLStream<T> {
   }
 
   public <R> BasicSQLStream<R> flatMap(
-      SafeSQLFunction<? super T, ? extends Stream<? extends R>> mapper){
+      SafeSQLFunction<? super T, ? extends Stream<? extends R>> mapper) {
     return new BasicSQLStream<R>(stream.flatMap(mapper.toFunction()));
   }
 
@@ -100,5 +100,14 @@ public class BasicSQLStream<T> {
 
   public void forEach(SafeSQLConsumer<? super T> action) {
     stream.forEach(action.toConsumer());
+  }
+
+  public long count() {
+    return stream.count();
+  }
+
+  @Override
+  public String toString() {
+    return "BasicSQLStream{stream=" + stream + "}";
   }
 }

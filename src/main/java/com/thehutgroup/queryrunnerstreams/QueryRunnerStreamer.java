@@ -1,5 +1,6 @@
 package com.thehutgroup.queryrunnerstreams;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
@@ -11,6 +12,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
 
 public class QueryRunnerStreamer {
 
+  @SuppressFBWarnings("LEST_LOST_EXCEPTION_STACK_TRACE")
   public static ResultSetHandler<BasicSQLStream<ResultSet>> stream() throws SQLException {
     try {
       return rs -> new BasicSQLStream<>(StreamSupport.stream(new ResultSetSpliterator(rs), false));
