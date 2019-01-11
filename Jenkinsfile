@@ -5,7 +5,7 @@ node {
 
   stage('Checkout') {
     checkout scm
-    sh 'git pull'
+    sh 'git checkout master && git pull'
   }
 
   stage('Test') {
