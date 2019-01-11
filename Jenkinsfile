@@ -3,18 +3,13 @@
 node {
   deleteDir()
 
-  stage('checkout') {
-    checkout([
-      $class: 'GitSCM',
-      branches: [[name: 'develop']],
-      extensions: [
-        [$class: 'WipeWorkspace'],
-        [$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false,
-          recursiveSubmodules: true, reference: '', trackingSubmodules: false]
-      ],
-      userRemoteConfigs: [
-        [url: "git@gitlab.io.thehut.local:thg-common/fuzzyduck.git", credentialsId: 'jenkins-ssh']]
-      ])
+  stage('Checkout') {
+    checkout scm
+    sh 'git pull'
+  }
+
+  stage('Test') {
+    sh './gradlew clean test check'
   }
 
   stage('Build') {

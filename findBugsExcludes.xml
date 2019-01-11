@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <!-- IntelliJs default hashCode method triggers this warning -->
+    <Method name="hashCode" />
+    <Bug code="USBR" />
+  </Match>
+  <Match>
+    <!-- Unneeded boxing or bools often results in more readable code -->
+    <Bug pattern="NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" />
+  </Match>
+  <Match>
+    <!-- Allows for extension of methods which at present only need to be private -->
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD" />
+  </Match>
+  <Match>
+    <!-- Allow execption softening for use in lambdas -->
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" />
+  </Match>
+</FindBugsFilter>

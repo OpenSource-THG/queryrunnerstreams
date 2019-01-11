@@ -10,7 +10,7 @@ while getopts "t:" o; do
 done
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd $DIR/..
+cd "$DIR/.."
 
 require_clean_work_tree () {
     git rev-parse --verify HEAD >/dev/null || exit 1
@@ -54,9 +54,11 @@ require_clean_work_tree () {
 
 echo "$(pwd)"
 
-echo "Pulling develop and verifying it is clean..."
-git pull origin develop
-require_clean_work_tree
+if git show-ref -q --heads develop; then
+    echo "Pulling develop and verifying it is clean..."
+    git pull origin develop
+    require_clean_work_tree
+fi
 
 echo "Verifying that master is clean..."
 git checkout master
@@ -64,7 +66,9 @@ git pull origin master
 require_clean_work_tree
 
 echo "Calculating tags"
+set +e #The next line will fail if there are no tags
 CURRENT_TAG=$(git describe --abbrev=0 --tags 2>/dev/null)
+set -e
 if [ ! -z "$CURRENT_TAG" ]
 then
     echo "Current tag $CURRENT_TAG"
@@ -76,8 +80,11 @@ fi
 
 echo "New tag $NEW_TAG"
 
-echo "Merging changes into master"
-git merge origin/develop
+
+if git show-ref -q --heads develop; then
+    echo "Merging changes into master"
+    git merge origin/develop
+fi
 
 git tag -a $NEW_TAG -m "$NEW_TAG"
 git push origin $NEW_TAG
