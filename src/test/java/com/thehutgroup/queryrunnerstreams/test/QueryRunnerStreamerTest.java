@@ -1,6 +1,5 @@
 package com.thehutgroup.queryrunnerstreams.test;
 
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.doReturn;
@@ -19,7 +18,7 @@ class QueryRunnerStreamerTest {
   @DisplayName("Test that a Stream can be made from a ResultSet")
   void testThatValuesCanBeExtracted() throws SQLException {
     ResultSet rs = mock(ResultSet.class);
-    doReturn("value").when(rs).getString("column");
+    doReturn("value").when(rs).getObject("column");
     doReturn(7).when(rs).getRow();
     doReturn(true).when(rs).next();
 

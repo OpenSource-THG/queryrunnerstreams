@@ -1,5 +1,6 @@
 package com.thehutgroup.queryrunnerstreams;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -16,6 +17,7 @@ public class SqlRow {
     return rs;
   }
 
+  @SuppressFBWarnings("URV_UNRELATED_RETURN_VALUES")
   public <T> T get(String columnLabel, Class<T> clazz) {
     try {
       switch (clazz.getName()) {
