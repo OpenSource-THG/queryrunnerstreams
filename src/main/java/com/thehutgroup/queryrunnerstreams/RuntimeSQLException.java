@@ -5,7 +5,7 @@ import java.sql.SQLException;
 public class RuntimeSQLException extends RuntimeException {
   private SQLException parent;
 
-  RuntimeSQLException(SQLException ex) {
+  public RuntimeSQLException(SQLException ex) {
     super(ex.getMessage(), ex);
     parent = ex;
   }

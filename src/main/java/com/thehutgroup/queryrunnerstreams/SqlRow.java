@@ -41,6 +41,10 @@ public class SqlRow {
     return value == null ? 0 : value;
   }
 
+  public boolean getBoolean(String columnLabel) {
+    return get(columnLabel, Boolean.class);
+  }
+
   public Instant getInstant(String columnLabel) {
     return get(columnLabel, Instant.class);
   }
