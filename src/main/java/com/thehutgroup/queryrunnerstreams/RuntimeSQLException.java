@@ -10,6 +10,14 @@ public class RuntimeSQLException extends RuntimeException {
     parent = ex;
   }
 
+  public RuntimeSQLException(String message) {
+    this(new SQLException(message));
+  }
+
+  public RuntimeSQLException(String message, Throwable cause) {
+    this(new SQLException(message, cause));
+  }
+
   public SQLException getParent() {
     return parent;
   }
