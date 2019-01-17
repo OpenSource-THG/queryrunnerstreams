@@ -24,7 +24,7 @@ class QueryRunnerStreamerTest {
     doReturn(true).when(rs).next();
 
     Optional<String> firstColumnValue = QueryRunnerStreamer.stream().handle(rs)
-        .map(row -> row.getString("column"))
+        .map(row -> row.get("column", String.class))
         .findFirst();
 
     assertThat(firstColumnValue.get(), is("value"));
