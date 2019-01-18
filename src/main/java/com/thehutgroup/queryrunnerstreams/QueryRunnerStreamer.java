@@ -27,22 +27,11 @@ public class QueryRunnerStreamer {
     return Comparator.comparing(keyExtractor.toFunction());
   }
 
-  private static long getSizeOfResultSet(ResultSet rs) {
-    try {
-      rs.last();
-      int size = rs.getRow();
-      rs.first();
-      return size;
-    } catch (SQLException ex) {
-      throw new RuntimeSQLException(ex);
-    }
-  }
-
   private static class ResultSetSpliterator extends Spliterators.AbstractSpliterator<SqlRow> {
     private final ResultSet rs;
 
     private ResultSetSpliterator(ResultSet rs) {
-      super(getSizeOfResultSet(rs), Spliterator.ORDERED);
+      super(Long.MAX_VALUE, Spliterator.ORDERED);
       this.rs = rs;
     }
 
