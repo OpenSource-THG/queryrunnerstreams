@@ -25,8 +25,8 @@ class QueryStreamTest {
 
   private final QueryRunner queryRunner;
 
-  public QueryStreamTest() {
-    queryRunner = getQueryRunner();
+  QueryStreamTest() {
+    queryRunner = getTestQueryRunner();
   }
 
   @BeforeEach
@@ -109,7 +109,7 @@ class QueryStreamTest {
     assertThat(result, is(Arrays.asList("twitter", "facebook")));
   }
 
-  private QueryRunner getQueryRunner() {
+  private QueryRunner getTestQueryRunner() {
     HikariConfig config = new HikariConfig();
     config.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
     config.setUsername("sa");
@@ -125,7 +125,6 @@ class QueryStreamTest {
     config.setPoolName("hikari-db-pool");
     config.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
     config.setReadOnly(false);
-    //config.setMetricRegistry(Objects.requireNonNull(themisMetricRegistry.getMetricRegistry()));
     return new QueryRunner(new HikariDataSource(config));
   }
 
