@@ -12,7 +12,9 @@ apply plugin: 'java'
 ext {
   commonsDbUtilsVersion = '1.7'
   findbugsVersion = '3.0.1'
+  h2DatabaseVersion = '1.4.197'
   hamcrestVersion = '1.3'
+  hikariVersion = '2.7.4'
   junitJupiterVersion = '5.2.0'
   junitPlatformVersion = '1.2.0'
   mockitoVersion = '2.21.0'
@@ -36,6 +38,10 @@ dependencies {
   testCompile("org.mockito:mockito-core:${mockitoVersion}")
   //testCompile("com.thehutgroup:testingasync:${themisTestingAsyncVersion}")
   //testCompile("com.thehutgroup:testing-matchers:${themisTestingMatchersVersion}")
+
+  //Test database
+  testCompile("com.h2database:h2:${h2DatabaseVersion}")
+  testCompile("com.zaxxer:HikariCP:${hikariVersion}")
 }
 
 

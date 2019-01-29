@@ -4,22 +4,36 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.commons.dbutils.ResultSetHandler;
 
-public class QueryRunnerStreamer {
+public class QueryStream {
 
   @SuppressFBWarnings("LEST_LOST_EXCEPTION_STACK_TRACE")
-  public static ResultSetHandler<Stream<SqlRow>> stream() throws SQLException {
+  public static Stream<SqlRow> of(ResultSet rs) throws SQLException {
     try {
-      return rs -> StreamSupport.stream(new ResultSetSpliterator(rs), false);
+      return StreamSupport.stream(new ResultSetSpliterator(rs), false);
     } catch (RuntimeSQLException ex) {
       throw ex.getParent();
     }
+  }
+
+  public static <T> Stream<T> map(ResultSet rs, SafeSQLFunction<SqlRow, T> mapper)
+      throws SQLException {
+    return of(rs)
+        .map(mapper.toFunction());
+  }
+
+  public static <T> List<T> toList(ResultSet rs, SafeSQLFunction<SqlRow, T> mapper)
+      throws SQLException {
+    return map(rs, mapper)
+        .collect(Collectors.toList());
   }
 
   public static <T, U extends Comparable<? super U>> Comparator<T> comparing(
