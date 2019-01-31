@@ -35,7 +35,7 @@ dependencies {
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
   testCompile("org.hamcrest:hamcrest-all:${hamcrestVersion}")
-  testCompile("org.mockito:mockito-core:${mockitoVersion}")
+  compile("org.mockito:mockito-core:${mockitoVersion}")
   //testCompile("com.thehutgroup:testingasync:${themisTestingAsyncVersion}")
   //testCompile("com.thehutgroup:testing-matchers:${themisTestingMatchersVersion}")
 
