@@ -12,6 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.thehutgroup.queryrunnerstreams.QueryStream;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -27,6 +28,7 @@ public class ResultSetAnswerTest {
 
   @Test
   @DisplayName("Test basic mockResultSet()")
+  @SuppressFBWarnings("PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS")
   void mockResultSetTest() throws SQLException {
 
     final ResultSet rs = mockResultSet(

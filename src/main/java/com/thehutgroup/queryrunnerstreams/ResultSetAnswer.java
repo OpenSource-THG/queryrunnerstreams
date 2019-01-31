@@ -5,6 +5,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -97,6 +98,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
       }
     }
 
+    @SuppressFBWarnings("UP_UNUSED_PARAMETER") //Parameter is for casting
     private <R> Answer getAnswer(Class<R> clazz) {
       return invocation -> (R) getValue(invocation);
     }
