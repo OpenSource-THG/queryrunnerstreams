@@ -11,14 +11,21 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.commons.dbutils.ResultSetHandler;
 
 public class QueryStream {
 
-  @SuppressFBWarnings("LEST_LOST_EXCEPTION_STACK_TRACE")
   public static Stream<SqlRow> of(ResultSet rs) throws SQLException {
+    return of(rs, null);
+  }
+
+  @SuppressFBWarnings("LEST_LOST_EXCEPTION_STACK_TRACE") //Intentionally throwing the parent
+  public static Stream<SqlRow> of(ResultSet rs, Runnable onClose) throws SQLException {
     try {
-      return StreamSupport.stream(new ResultSetSpliterator(rs), false);
+      Stream<SqlRow> baseStream = StreamSupport.stream(new ResultSetSpliterator(rs), false);
+      if (onClose != null) {
+        baseStream = ClosableStreamInvocationHandler.wrap(baseStream, onClose);
+      }
+      return baseStream;
     } catch (RuntimeSQLException ex) {
       throw ex.getParent();
     }

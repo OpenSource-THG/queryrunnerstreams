@@ -18,7 +18,15 @@
     <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" />
   </Match>
   <Match>
-    <!-- Allow eclasses that don't implement toString() -->
+    <!-- Allow classes that don't implement toString() -->
     <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING" />
+  </Match>
+  <Match>
+    <!-- Allow for exceptions to have static messages, such as when passed in a null -->
+    <Bug pattern="WEM_WEAK_EXCEPTION_MESSAGING" />
+  </Match>
+  <Match>
+    <!-- False positives when boxing and unboxing -->
+    <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
   </Match>
 </FindBugsFilter>

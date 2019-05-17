@@ -42,7 +42,7 @@ public class SqlRow {
   }
 
   public boolean getBoolean(String columnLabel) {
-    return get(columnLabel, Boolean.class);
+    return Boolean.TRUE.equals(get(columnLabel, Boolean.class));
   }
 
   public Instant getInstant(String columnLabel) {

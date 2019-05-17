@@ -1,4 +1,4 @@
-package com.thehutgroup.queryrunnerstreams.test;
+package com.thehutgroup.queryrunnerstreams;
 
 import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.doMockResultSet;
 import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.mockResultSet;
