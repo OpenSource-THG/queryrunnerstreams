@@ -1,4 +1,4 @@
-package com.thehutgroup.queryrunnerstreams.test;
+package com.thehutgroup.queryrunnerstreams;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -62,7 +62,7 @@ class QueryStreamTest {
 
     String authUrl = UUID.randomUUID().toString();
 
-    insertRows(queryRunner, authUrl);
+    insertRows(authUrl);
 
     String result = queryRunner.query(
         "SELECT * FROM Social_Login_Provider WHERE Auth_URL = ? ORDER BY Code DESC",
@@ -80,7 +80,7 @@ class QueryStreamTest {
 
     String authUrl = UUID.randomUUID().toString();
 
-    insertRows(queryRunner, authUrl);
+    insertRows(authUrl);
 
     String result = queryRunner.query(
         "SELECT * FROM Social_Login_Provider WHERE Auth_URL = ? ORDER BY Code DESC",
@@ -98,7 +98,7 @@ class QueryStreamTest {
 
     String authUrl = UUID.randomUUID().toString();
 
-    insertRows(queryRunner, authUrl);
+    insertRows(authUrl);
 
     List<String> result = queryRunner.query(
         "SELECT * FROM Social_Login_Provider WHERE Auth_URL = ? ORDER BY Code DESC",
@@ -128,7 +128,7 @@ class QueryStreamTest {
     return new QueryRunner(new HikariDataSource(config));
   }
 
-  private void insertRows(QueryRunner queryRunner, String authUrl) throws SQLException {
+  private void insertRows(String authUrl) throws SQLException {
     queryRunner.execute("INSERT INTO Social_Login_Provider "
         + "  (Provider_Id, Code, Name, Auth_URL, Method) "
         + "VALUES "
