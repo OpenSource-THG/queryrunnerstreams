@@ -59,6 +59,18 @@ public class ResultSetAnswer<T> implements Answer<T> {
     return doAnswer(new ResultSetAnswer(columnNames, data));
   }
 
+  public static Stream<SqlRow> mockQueryStream(final String[] columnNames, final Object[][] data) {
+    try {
+      return QueryStream.of(mockResultSet(columnNames, data));
+    } catch (SQLException ex) {
+      throw new RuntimeSQLException(ex);
+    }
+  }
+
+  public static Stubber doMockQueryStream(final String[] columnNames, final Object[][] data) {
+    return doReturn(mockQueryStream(columnNames, data));
+  }
+
   private static class MockResultSet {
 
     private final Map<String, Integer> columnIndices;

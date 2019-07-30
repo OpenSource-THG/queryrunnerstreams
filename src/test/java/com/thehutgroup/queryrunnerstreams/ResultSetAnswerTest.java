@@ -1,5 +1,6 @@
 package com.thehutgroup.queryrunnerstreams;
 
+import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.doMockQueryStream;
 import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.doMockResultSet;
 import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.mockResultSet;
 import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.withMockResultSet;
@@ -15,7 +16,9 @@ import com.thehutgroup.queryrunnerstreams.QueryStream;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.commons.dbutils.QueryRunner;
 import org.junit.jupiter.api.Disabled;
@@ -115,4 +118,63 @@ public class ResultSetAnswerTest {
 
   }
 
+  @Test
+  @DisplayName("Test using doMockQueryStream().when().stream()")
+  void testDoMockQueryStream() throws SQLException {
+    NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
+
+    doMockQueryStream(
+        new String[]{"Id", "Name", "Grade"},
+        new Object[][]{
+            { 1, "Steve", "A" },
+            { 2, "Chris", "D" },
+            { 3, "Bob", "B" },
+            { 4, "John", "A" }}).when(queryRunner).stream(SQL_QUERY);
+
+    List<Student> expectedStudents = new ArrayList<>();
+    expectedStudents.add(new Student(1, "Steve", "A"));
+    expectedStudents.add(new Student( 2, "Chris", "D"));
+    expectedStudents.add(new Student(3, "Bob", "B"));
+    expectedStudents.add(new Student(4, "John", "A"));
+
+    List<Student> actualStudents = queryRunner.stream(SQL_QUERY)
+        .map(row -> new Student(
+            row.getInt("Id"),
+            row.getString("Name"),
+            row.getString("Grade")))
+        .collect(Collectors.toList());
+
+    assertThat(actualStudents, is(expectedStudents));
+  }
+
+  private static class Student {
+    private final int id;
+    private final String name;
+    private final String grade;
+
+    public Student(int id, String name, String grade) {
+      this.id = id;
+      this.name = name;
+      this.grade = grade;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (this == that) {
+        return true;
+      }
+      if (that == null || getClass() != that.getClass()) {
+        return false;
+      }
+      Student student = (Student) that;
+      return id == student.id
+          && Objects.equals(name, student.name)
+          && Objects.equals(grade, student.grade);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(id, name, grade);
+    }
+  }
 }
