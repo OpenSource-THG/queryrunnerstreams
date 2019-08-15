@@ -3,7 +3,9 @@ package com.thehutgroup.queryrunnerstreams;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.function.Supplier;
 
 public class SqlRow {
 
@@ -17,15 +19,26 @@ public class SqlRow {
     return rs;
   }
 
-  @SuppressFBWarnings("URV_UNRELATED_RETURN_VALUES")
   public <T> T get(String columnLabel, Class<T> clazz) {
+    return get(() -> rs.getObject(columnLabel), clazz);
+  }
+
+  //Note: these indices start at 1
+  public <T> T get(int columnIndex, Class<T> clazz) {
+    return get(() -> rs.getObject(columnIndex), clazz);
+  }
+
+  //Note: these indices start at 1
+  @SuppressFBWarnings("URV_UNRELATED_RETURN_VALUES")
+  private <T> T get(SafeSQLSupplier<Object> supplier, Class<T> clazz) {
     try {
       switch (clazz.getName()) {
         case "java.time.Instant":
-          return (T) rs.getTimestamp(columnLabel).toInstant();
+          Timestamp timestamp = (Timestamp) supplier.get();
+          return timestamp == null ? null : (T) timestamp.toInstant();
 
         default:
-          return (T) rs.getObject(columnLabel);
+          return (T) supplier.get();
       }
     } catch (SQLException ex) {
       throw new RuntimeSQLException(ex);
