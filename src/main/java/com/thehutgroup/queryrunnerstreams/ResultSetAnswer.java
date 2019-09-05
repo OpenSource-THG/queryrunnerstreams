@@ -68,7 +68,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
   }
 
   public static Stubber doMockQueryStream(final String[] columnNames, final Object[][] data) {
-    return doReturn(mockQueryStream(columnNames, data));
+    return doAnswer(invocation -> mockQueryStream(columnNames, data));
   }
 
   private static class MockResultSet {

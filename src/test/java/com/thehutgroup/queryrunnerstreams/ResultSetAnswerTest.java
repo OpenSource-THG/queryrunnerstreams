@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.thehutgroup.queryrunnerstreams.QueryStream;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,7 +24,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class ResultSetAnswerTest {
+class ResultSetAnswerTest {
 
   private static final String SQL_QUERY = "SELECT * FROM table WHERE value = ?";
 
@@ -37,8 +36,8 @@ public class ResultSetAnswerTest {
     final ResultSet rs = mockResultSet(
         new String[] { "name", "age" }, //columns
         new Object[][] {
-            { "Alice", 20 },
-            { "Bob", 35 },
+            { "Alice",   20 },
+            { "Bob",     35 },
             { "Charles", 50 }
         });
 
@@ -66,8 +65,8 @@ public class ResultSetAnswerTest {
 
     doMockResultSet(new String[] { "name", "age" }, //columns
         new Object[][] {
-            { "Alice", 20 },
-            { "Bob", 35 },
+            { "Alice",   20 },
+            { "Bob",     35 },
             { "Charles", 50 }
         })
         .when(queryRunner)
@@ -97,8 +96,8 @@ public class ResultSetAnswerTest {
     final ResultSet rs = mockResultSet(
         new String[] { "name", "age" }, //columns
         new Object[][] {
-            { "Alice", 20 },
-            { "Bob", 35 },
+            { "Alice",   20 },
+            { "Bob",     35 },
             { "Charles", 50 }
         });
 
@@ -128,8 +127,8 @@ public class ResultSetAnswerTest {
         new Object[][]{
             { 1, "Steve", "A" },
             { 2, "Chris", "D" },
-            { 3, "Bob", "B" },
-            { 4, "John", "A" }}).when(queryRunner).stream(SQL_QUERY);
+            { 3, "Bob",   "B" },
+            { 4, "John",  "A" }}).when(queryRunner).stream(SQL_QUERY);
 
     List<Student> expectedStudents = new ArrayList<>();
     expectedStudents.add(new Student(1, "Steve", "A"));
@@ -147,12 +146,33 @@ public class ResultSetAnswerTest {
     assertThat(actualStudents, is(expectedStudents));
   }
 
+  @Test
+  @DisplayName("Test using doMockQueryStream().when().stream() with empty result")
+  void testDoMockQueryStreamWithEmptyResult() throws SQLException {
+    NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
+
+    doMockQueryStream(
+        new String[]{"Id", "Name", "Grade"},
+        new Object[][]{ }).when(queryRunner).stream(SQL_QUERY);
+
+    List<Student> expectedStudents = new ArrayList<>();
+
+    List<Student> actualStudents = queryRunner.stream(SQL_QUERY)
+        .map(row -> new Student(
+            row.getInt("Id"),
+            row.getString("Name"),
+            row.getString("Grade")))
+        .collect(Collectors.toList());
+
+    assertThat(actualStudents, is(expectedStudents));
+  }
+
   private static class Student {
     private final int id;
     private final String name;
     private final String grade;
 
-    public Student(int id, String name, String grade) {
+    Student(int id, String name, String grade) {
       this.id = id;
       this.name = name;
       this.grade = grade;

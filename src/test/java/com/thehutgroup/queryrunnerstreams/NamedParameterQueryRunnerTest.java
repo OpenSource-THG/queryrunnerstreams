@@ -1,5 +1,6 @@
 package com.thehutgroup.queryrunnerstreams;
 
+import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -10,6 +11,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
@@ -53,6 +55,25 @@ class NamedParameterQueryRunnerTest {
         .collect(Collectors.joining(","));
 
     assertThat(result, is("twitter,facebook"));
+  }
+
+  @Test
+  @DisplayName("Test that we can query from a database using findAny()")
+  void testQueryingWithFindAnyFromRealDB() throws SQLException {
+
+    final String authUrl = UUID.randomUUID().toString();
+
+    insertRows(authUrl);
+
+    Optional<String> result = queryRunner
+        .stream(
+            "SELECT * FROM Social_Login_Provider WHERE Auth_URL = :authUrl ORDER BY Code DESC",
+            Collections.singletonMap("authUrl", authUrl))
+        .map(row -> row.get("Code", String.class))
+        .findAny();
+
+    assertThat(result.isPresent(), is(true));
+    assertThat(result.get(), either(is("twitter")).or(is("facebook")));
   }
 
   @Test
