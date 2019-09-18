@@ -16,14 +16,14 @@ class NamedParameterParser {
   SqlAndParamsList parseNamedParameters(final String sql, final Map<String, Object> params)
       throws SQLException {
 
-    StringBuffer resultSql = new StringBuffer();
-    List<Object> paramList = new ArrayList<>();
+    final StringBuffer resultSql = new StringBuffer();
+    final List<Object> paramList = new ArrayList<>();
 
-    Matcher matcher = pattern.matcher(sql);
+    final Matcher matcher = pattern.matcher(sql);
     while (matcher.find()) {
-      String key = matcher.group(1).substring(1);
-      boolean batch = matcher.group(2) != null;
-      Object value = params.get(key);
+      final String key = matcher.group(1).substring(1);
+      final boolean batch = matcher.group(2) != null;
+      final Object value = params.get(key);
       if (value == null) {
         throw new SQLException("Parameter :" + key + " could not be matched");
       }
@@ -32,11 +32,11 @@ class NamedParameterParser {
         if (!(value instanceof Collection<?>)) {
           throw new SQLException("Value of :" + key + " is not a collection");
         }
-        int count = 0;
-        for (Object subValue : ((Collection) value)) {
-          count++;
-          paramList.add(subValue);
-        }
+
+        final Collection<?> collection = (Collection) value;
+        final int count = collection.size();
+        paramList.addAll(collection);
+
         matcher.appendReplacement(resultSql, String.join(", ", Collections.nCopies(count, "?")));
       } else {
         matcher.appendReplacement(resultSql, "?");
