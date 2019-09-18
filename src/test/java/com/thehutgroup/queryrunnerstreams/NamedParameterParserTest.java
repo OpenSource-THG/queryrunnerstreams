@@ -4,10 +4,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.thehutgroup.queryrunnerstreams.NamedParameterParser.SqlAndParamsList;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -95,6 +97,45 @@ class NamedParameterParserTest {
     }
 
     assertThat(exception, is(not(nullValue())));
+  }
+
+  @Test
+  @DisplayName("Check batch operation of Named Parameter Parser")
+  void batchUsage() throws SQLException {
+    String sql = "SELECT * FROM Table WHERE ColA = :val1 AND ColB IN (:val2[]) AND ColC = :val3";
+
+    Map<String, Object> params = new HashMap<>();
+    params.put("val1", 5);
+    params.put("val2", Arrays.asList(6, 7, 8));
+    params.put("val3", 9);
+
+    SqlAndParamsList result = parser.parseNamedParameters(sql, params);
+
+    assertThat(result.getSql(),
+        is("SELECT * FROM Table WHERE ColA = ? AND ColB IN (?, ?, ?) AND ColC = ?"));
+    assertThat(result.getParams().length, is(5));
+    assertThat(result.getParams()[0], is(5));
+    assertThat(result.getParams()[1], is(6));
+    assertThat(result.getParams()[2], is(7));
+    assertThat(result.getParams()[3], is(8));
+    assertThat(result.getParams()[4], is(9));
+  }
+
+  @Test
+  @DisplayName("Check that passing in something that is not a collection fails as a batch param")
+  void batchUsageWithoutCollection() throws SQLException {
+    String sql = "SELECT * FROM Table WHERE ColA = :val1 AND ColB IN (:val2[]) AND ColC = :val3";
+
+    Map<String, Object> params = new HashMap<>();
+    params.put("val1", 5);
+    params.put("val2", 8);
+    params.put("val3", 9);
+
+    assertThrows(SQLException.class, () -> parser.parseNamedParameters(sql, params));
+
+    //Even an array should throw for now.
+    params.put("val2", new int[] { 6, 7, 8 });
+    assertThrows(SQLException.class, () -> parser.parseNamedParameters(sql, params));
   }
 
 }
