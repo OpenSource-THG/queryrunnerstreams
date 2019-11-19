@@ -20,12 +20,13 @@ public class NamedParameterQueryRunner extends QueryRunner {
 
   private final NamedParameterParser parser;
 
-  public NamedParameterQueryRunner(DataSource ds) {
+  public NamedParameterQueryRunner(final DataSource ds) {
     super(ds);
     parser = new NamedParameterParser();
   }
 
-  public <T> T query(String sql, ResultSetHandler<T> rsh, Map<String, Object> params)
+  public <T> T query(
+      final String sql, final ResultSetHandler<T> rsh, final Map<String, Object> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
@@ -35,7 +36,7 @@ public class NamedParameterQueryRunner extends QueryRunner {
 
   @SuppressFBWarnings("LEST_LOST_EXCEPTION_STACK_TRACE") //Intentionally throwing the parent
   public <T> List<T> queryForList(
-      final String sql, final SafeSQLFunction<SqlRow, T> rowMapper, Object... params)
+      final String sql, final SafeSQLFunction<SqlRow, T> rowMapper, final Object... params)
       throws SQLException {
 
     ResultSetHandler<List<T>> rsh = rs -> {
@@ -56,7 +57,9 @@ public class NamedParameterQueryRunner extends QueryRunner {
   }
 
   public <T> List<T> queryForList(
-      String sql, SafeSQLFunction<SqlRow, T> rowMapper, Map<String, Object> params)
+      final String sql,
+      final SafeSQLFunction<SqlRow, T> rowMapper,
+      final Map<String, Object> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
@@ -65,7 +68,7 @@ public class NamedParameterQueryRunner extends QueryRunner {
   }
 
   @SuppressFBWarnings("LEST_LOST_EXCEPTION_STACK_TRACE") //Intentionally throwing the parent
-  public <T> T queryForObject(final String sql, final Class<T> clazz, Object... params)
+  public <T> T queryForObject(final String sql, final Class<T> clazz, final Object... params)
       throws SQLException {
 
     ResultSetHandler<T> rsh = rs -> {
@@ -92,7 +95,8 @@ public class NamedParameterQueryRunner extends QueryRunner {
     }
   }
 
-  public <T> T queryForObject(final String sql, final Class<T> clazz, Map<String, Object> params)
+  public <T> T queryForObject(
+      final String sql, final Class<T> clazz, final Map<String, Object> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
@@ -100,7 +104,7 @@ public class NamedParameterQueryRunner extends QueryRunner {
     return queryForObject(simple.getSql(), clazz, simple.getParams());
   }
 
-  public int update(String sql, Map<String, Object> params)
+  public int update(final String sql, final Map<String, Object> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
@@ -108,7 +112,7 @@ public class NamedParameterQueryRunner extends QueryRunner {
     return update(simple.getSql(), simple.getParams());
   }
 
-  public int execute(String sql, Map<String, Object> params)
+  public int execute(final String sql, final Map<String, Object> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
@@ -116,14 +120,15 @@ public class NamedParameterQueryRunner extends QueryRunner {
     return execute(simple.getSql(), simple.getParams());
   }
 
-  public Stream<SqlRow> stream(String sql, Map<String, Object> params) throws SQLException {
+  public Stream<SqlRow> stream(final String sql, final Map<String, Object> params)
+      throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
 
     return stream(simple.getSql(), simple.getParams());
   }
 
-  public Stream<SqlRow> stream(String sql, Object... params) throws SQLException {
+  public Stream<SqlRow> stream(final String sql, final Object... params) throws SQLException {
     final Connection conn = prepareConnection();
 
     if (conn == null) {
@@ -151,13 +156,17 @@ public class NamedParameterQueryRunner extends QueryRunner {
       }
     }
 
-    final Statement fstmt = stmt;
-    final ResultSet frs = rs;
-
-    return QueryStream.of(rs, () -> close(frs, fstmt, conn));
+    try {
+      final Statement fstmt = stmt;
+      final ResultSet frs = rs;
+      return QueryStream.of(rs, () -> close(frs, fstmt, conn));
+    } catch (SQLException | RuntimeException ex) {
+      close(rs, stmt, conn);
+      throw ex;
+    }
   }
 
-  private void close(ResultSet rs, Statement stmt, Connection conn) {
+  private void close(final ResultSet rs, final Statement stmt, final Connection conn) {
     try {
       try {
         close(rs);

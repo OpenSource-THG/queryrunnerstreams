@@ -5,16 +5,16 @@ import java.sql.SQLException;
 public class RuntimeSQLException extends RuntimeException {
   private SQLException parent;
 
-  public RuntimeSQLException(SQLException ex) {
+  public RuntimeSQLException(final SQLException ex) {
     super(ex.getMessage(), ex);
     parent = ex;
   }
 
-  public RuntimeSQLException(String message) {
+  public RuntimeSQLException(final String message) {
     this(new SQLException(message));
   }
 
-  public RuntimeSQLException(String message, Throwable cause) {
+  public RuntimeSQLException(final String message, final Throwable cause) {
     this(new SQLException(message, cause));
   }
 
@@ -38,11 +38,11 @@ public class RuntimeSQLException extends RuntimeException {
     return parent.toString();
   }
 
-  public static SQLException extract(RuntimeSQLException ex) {
+  public static SQLException extract(final RuntimeSQLException ex) {
     return ex.getParent();
   }
 
-  public static SQLException extract(SQLException ex) {
+  public static SQLException extract(final SQLException ex) {
     return ex;
   }
 }

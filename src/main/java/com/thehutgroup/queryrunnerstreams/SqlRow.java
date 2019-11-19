@@ -5,13 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.function.Supplier;
 
 public class SqlRow {
 
   private ResultSet rs;
 
-  SqlRow(ResultSet rs) {
+  SqlRow(final ResultSet rs) {
     this.rs = rs;
   }
 
@@ -19,18 +18,18 @@ public class SqlRow {
     return rs;
   }
 
-  public <T> T get(String columnLabel, Class<T> clazz) {
+  public <T> T get(final String columnLabel, final Class<T> clazz) {
     return get(() -> rs.getObject(columnLabel), clazz);
   }
 
   //Note: these indices start at 1
-  public <T> T get(int columnIndex, Class<T> clazz) {
+  public <T> T get(final int columnIndex, final Class<T> clazz) {
     return get(() -> rs.getObject(columnIndex), clazz);
   }
 
   //Note: these indices start at 1
   @SuppressFBWarnings("URV_UNRELATED_RETURN_VALUES")
-  private <T> T get(SafeSQLSupplier<Object> supplier, Class<T> clazz) {
+  private <T> T get(final SafeSQLSupplier<Object> supplier, final Class<T> clazz) {
     try {
       switch (clazz.getName()) {
         case "java.time.Instant":
@@ -45,20 +44,20 @@ public class SqlRow {
     }
   }
 
-  public String getString(String columnLabel) {
+  public String getString(final String columnLabel) {
     return get(columnLabel, String.class);
   }
 
-  public int getInt(String columnLabel) {
+  public int getInt(final String columnLabel) {
     Integer value = get(columnLabel, Integer.class);
     return value == null ? 0 : value;
   }
 
-  public boolean getBoolean(String columnLabel) {
+  public boolean getBoolean(final String columnLabel) {
     return Boolean.TRUE.equals(get(columnLabel, Boolean.class));
   }
 
-  public Instant getInstant(String columnLabel) {
+  public Instant getInstant(final String columnLabel) {
     return get(columnLabel, Instant.class);
   }
 }

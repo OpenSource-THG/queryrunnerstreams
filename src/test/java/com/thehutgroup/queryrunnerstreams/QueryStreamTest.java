@@ -5,7 +5,6 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import com.thehutgroup.queryrunnerstreams.QueryStream;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.ResultSet;
@@ -15,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.dbutils.QueryRunner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,6 +110,7 @@ class QueryStreamTest {
     assertThat(result, is(Arrays.asList("twitter", "facebook")));
   }
 
+  @SuppressFBWarnings("HARD_CODE_PASSWORD")
   private QueryRunner getTestQueryRunner() {
     HikariConfig config = new HikariConfig();
     config.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
@@ -128,7 +130,7 @@ class QueryStreamTest {
     return new QueryRunner(new HikariDataSource(config));
   }
 
-  private void insertRows(String authUrl) throws SQLException {
+  private void insertRows(final String authUrl) throws SQLException {
     queryRunner.execute("INSERT INTO Social_Login_Provider "
         + "  (Provider_Id, Code, Name, Auth_URL, Method) "
         + "VALUES "

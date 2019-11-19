@@ -4,11 +4,11 @@ import java.sql.SQLException;
 
 public class EmptyResultDataAccessException extends SQLException {
 
-  EmptyResultDataAccessException(String message, Throwable cause) {
+  EmptyResultDataAccessException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
-  EmptyResultDataAccessException(String message) {
+  EmptyResultDataAccessException(final String message) {
     super(message);
   }
 

@@ -13,14 +13,15 @@ public class ClosableStreamInvocationHandler<T> implements InvocationHandler {
   private final Stream<T> base;
   private final Runnable onClose;
 
-  public ClosableStreamInvocationHandler(Stream<T> base, Runnable onClose) {
+  public ClosableStreamInvocationHandler(final Stream<T> base, final Runnable onClose) {
     this.base = base;
     this.onClose = onClose;
   }
 
   @Override
   @SuppressFBWarnings //This method upsets Findbugs in a lot of ways
-  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+  public Object invoke(final Object proxy, final Method method, final Object[] args)
+      throws Throwable {
     try {
 
       // If the method returns a standard stream, wrap it
@@ -62,7 +63,7 @@ public class ClosableStreamInvocationHandler<T> implements InvocationHandler {
     }
   }
 
-  public static <T> Stream<T> wrap(Stream<T> base, Runnable onClose) {
+  public static <T> Stream<T> wrap(final Stream<T> base, final Runnable onClose) {
     return (Stream<T>) Proxy.newProxyInstance(
         null,
         new Class[] { Stream.class },

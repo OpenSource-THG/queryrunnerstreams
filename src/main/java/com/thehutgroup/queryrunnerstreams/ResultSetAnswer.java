@@ -25,7 +25,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
 
   private final ResultSet rs;
 
-  private ResultSetAnswer(ResultSet rs) {
+  private ResultSetAnswer(final ResultSet rs) {
     this.rs = rs;
   }
 
@@ -34,7 +34,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
   }
 
   @Override
-  public T answer(InvocationOnMock invocation) throws Throwable {
+  public T answer(final InvocationOnMock invocation) throws Throwable {
     return Stream.of(invocation.getArguments())
         .filter(object -> object instanceof ResultSetHandler)
         .map(object -> (ResultSetHandler<T>) object)
@@ -47,11 +47,11 @@ public class ResultSetAnswer<T> implements Answer<T> {
     return new MockResultSet(columnNames, data).build();
   }
 
-  public static <T> Answer<T> withMockResultSet(ResultSet rs) {
+  public static <T> Answer<T> withMockResultSet(final ResultSet rs) {
     return new ResultSetAnswer<>(rs);
   }
 
-  public static Stubber doMockResultSet(ResultSet rs) {
+  public static Stubber doMockResultSet(final ResultSet rs) {
     return doAnswer(new ResultSetAnswer(rs));
   }
 
@@ -111,11 +111,11 @@ public class ResultSetAnswer<T> implements Answer<T> {
     }
 
     @SuppressFBWarnings("UP_UNUSED_PARAMETER") //Parameter is for casting
-    private <R> Answer getAnswer(Class<R> clazz) {
+    private <R> Answer getAnswer(final Class<R> clazz) {
       return invocation -> (R) getValue(invocation);
     }
 
-    private Object getValue(InvocationOnMock invocation) {
+    private Object getValue(final InvocationOnMock invocation) {
       Object arg = invocation.getArgument(0);
       if (arg instanceof String) {
         return getValue((String) arg);
@@ -124,11 +124,11 @@ public class ResultSetAnswer<T> implements Answer<T> {
       }
     }
 
-    private Object getValue(String columnName) {
+    private Object getValue(final String columnName) {
       return getValue(columnIndices.get(columnName) + 1);
     }
 
-    private Object getValue(int columnIndex) {
+    private Object getValue(final int columnIndex) {
       return data[rowIndex][columnIndex - 1];
     }
   }

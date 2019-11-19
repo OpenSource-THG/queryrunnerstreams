@@ -1,0 +1,18 @@
+check:
+  script:
+    - ./gradlew clean check --refresh-dependencies
+  artifacts:
+    paths:
+      - build/reports/checkstyle/*.html
+      - build/reports/spotbugs/*.html
+    reports:
+      junit: build/test-results/test/*.xml
+  only:
+    - merge_requests
+
+release:
+  image: artifactory.io.thehut.local:5000/adoptopenjdk/openjdk11-openj9:jdk-11.0.3_7_openj9-0.14.3-alpine.20190821.0000
+  script:
+    - ./gradlew --no-daemon --refresh-dependencies clean check sonarqube artifactoryPublish
+  only:
+    - tags

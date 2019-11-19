@@ -87,8 +87,8 @@ class ResultSetAnswerTest {
   }
 
   @Test
-  @Disabled
   @DisplayName("Test using when().thenAnswer(withMockResultSet())")
+  @Disabled
   void whenDoAnswerWithMockResultSetTest() throws SQLException {
 
     QueryRunner queryRunner = mock(QueryRunner.class);
@@ -172,14 +172,14 @@ class ResultSetAnswerTest {
     private final String name;
     private final String grade;
 
-    Student(int id, String name, String grade) {
+    Student(final int id, final String name, final String grade) {
       this.id = id;
       this.name = name;
       this.grade = grade;
     }
 
     @Override
-    public boolean equals(Object that) {
+    public boolean equals(final Object that) {
       if (this == that) {
         return true;
       }
