@@ -7,7 +7,7 @@ buildscript {
   }
 
   dependencies {
-    classpath('thg:thg-gradle-plugin:2.1.+')
+    classpath('thg:thg-gradle-plugin:2.1.12')
   }
 }
 
@@ -34,22 +34,21 @@ ext {
 dependencies {
 
   // Database Utils
-  compile("commons-dbutils:commons-dbutils:${commonsDbUtilsVersion}")
+  implementation("commons-dbutils:commons-dbutils:${commonsDbUtilsVersion}")
 
   //FindBugs annotations (@SuppressFBWarnings)
-  compile("com.github.spotbugs:spotbugs-annotations:${spotbugsAnnotationsVersion}")
+  implementation("com.github.spotbugs:spotbugs-annotations:${spotbugsAnnotationsVersion}")
 
   //Unit testing
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
-  testCompile("org.hamcrest:hamcrest:${hamcrestVersion}")
-  compile("org.mockito:mockito-core:${mockitoVersion}")
+  testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+  testImplementation("org.hamcrest:hamcrest:${hamcrestVersion}")
+  implementation("org.mockito:mockito-core:${mockitoVersion}")
 
   //Test database
-  testCompile("com.h2database:h2:${h2DatabaseVersion}")
-  testCompile("com.zaxxer:HikariCP:${hikariVersion}")
+  testImplementation("com.h2database:h2:${h2DatabaseVersion}")
+  testImplementation("com.zaxxer:HikariCP:${hikariVersion}")
 }
-
 
 artifactory {
 	publish {
@@ -79,4 +78,3 @@ spotbugsMain {
 spotbugsTest {
   reportLevel = 'medium'
 }
-
