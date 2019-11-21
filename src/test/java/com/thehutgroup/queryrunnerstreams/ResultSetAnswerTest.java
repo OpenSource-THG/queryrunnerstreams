@@ -1,6 +1,5 @@
 package com.thehutgroup.queryrunnerstreams;
 
-import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.doMockQueryStream;
 import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.doMockResultSet;
 import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.mockResultSet;
 import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.withMockResultSet;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.apache.commons.dbutils.QueryRunner;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,7 +59,7 @@ class ResultSetAnswerTest {
   @DisplayName("Test using doMockResultSet().when()")
   void doMockResultSetTest() throws SQLException {
 
-    QueryRunner queryRunner = mock(QueryRunner.class);
+    NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
 
     doMockResultSet(new String[] { "name", "age" }, //columns
         new Object[][] {
@@ -91,7 +89,7 @@ class ResultSetAnswerTest {
   @Disabled
   void whenDoAnswerWithMockResultSetTest() throws SQLException {
 
-    QueryRunner queryRunner = mock(QueryRunner.class);
+    NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
 
     final ResultSet rs = mockResultSet(
         new String[] { "name", "age" }, //columns
@@ -118,11 +116,38 @@ class ResultSetAnswerTest {
   }
 
   @Test
-  @DisplayName("Test using doMockQueryStream().when().stream()")
+  @DisplayName("Test using doMockResultSet().when() on queryForList")
+  void doMockResultSetQueryForListTest() throws SQLException {
+
+    NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
+
+    doMockResultSet(new String[] { "name", "age" }, //columns
+        new Object[][] {
+            { "Alice",   20 },
+            { "Bob",     35 },
+            { "Charles", 50 }
+        })
+        .when(queryRunner)
+        .queryForList(eq(SQL_QUERY), any(), anyInt());
+
+    List<String> names = queryRunner.queryForList(
+        SQL_QUERY,
+        row -> row.get("name", String.class),
+        1);
+
+    assertThat(names.size(), is(3));
+    assertThat(names.get(0), is("Alice"));
+    assertThat(names.get(1), is("Bob"));
+    assertThat(names.get(2), is("Charles"));
+
+  }
+
+  @Test
+  @DisplayName("Test using doMockResultSet().when() on stream")
   void testDoMockQueryStream() throws SQLException {
     NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
 
-    doMockQueryStream(
+    doMockResultSet(
         new String[]{"Id", "Name", "Grade"},
         new Object[][]{
             { 1, "Steve", "A" },
@@ -147,11 +172,11 @@ class ResultSetAnswerTest {
   }
 
   @Test
-  @DisplayName("Test using doMockQueryStream().when().stream() with empty result")
+  @DisplayName("Test using doMockResultSet().when() on stream with empty result")
   void testDoMockQueryStreamWithEmptyResult() throws SQLException {
     NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
 
-    doMockQueryStream(
+    doMockResultSet(
         new String[]{"Id", "Name", "Grade"},
         new Object[][]{ }).when(queryRunner).stream(SQL_QUERY);
 

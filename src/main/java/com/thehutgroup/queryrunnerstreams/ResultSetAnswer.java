@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,13 +36,41 @@ public class ResultSetAnswer<T> implements Answer<T> {
   }
 
   @Override
+  @SuppressFBWarnings("URV_INHERITED_METHOD_WITH_RELATED_TYPES")
   public T answer(final InvocationOnMock invocation) throws Throwable {
-    return Stream.of(invocation.getArguments())
-        .filter(object -> object instanceof ResultSetHandler)
-        .map(object -> (ResultSetHandler<T>) object)
-        .findFirst()
-        .orElseThrow(() -> new Exception("No argument of type ResultSetHandler was passed"))
-        .handle(rs);
+
+    switch (invocation.getMethod().getName()) {
+      case "queryForList":
+        SafeSQLFunction<SqlRow, ?> rowMapper = Stream.of(invocation.getArguments())
+            .filter(object -> object instanceof SafeSQLFunction)
+            .map(object -> (SafeSQLFunction<SqlRow, ?>) object)
+            .findFirst()
+            .orElseThrow(() -> new Exception("No argument of type ResultSetHandler was passed"));
+
+        List<Object> list = new ArrayList<>();
+
+        while (rs.next()) {
+          try {
+            list.add(rowMapper.apply(new SqlRow(rs)));
+          } catch (RuntimeSQLException ex) {
+            throw ex.getParent();
+          }
+        }
+
+        return (T) list;
+
+      case "stream":
+        return (T) QueryStream.of(rs);
+
+      default: //Methods based off query.
+        return Stream.of(invocation.getArguments())
+            .filter(object -> object instanceof ResultSetHandler)
+            .map(object -> (ResultSetHandler<T>) object)
+            .findFirst()
+            .orElseThrow(() -> new Exception("No argument of type ResultSetHandler was passed"))
+            .handle(rs);
+    }
+
   }
 
   public static ResultSet mockResultSet(final String[] columnNames, final Object[][] data) {
@@ -59,6 +89,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
     return doAnswer(new ResultSetAnswer(columnNames, data));
   }
 
+  @Deprecated
   public static Stream<SqlRow> mockQueryStream(final String[] columnNames, final Object[][] data) {
     try {
       return QueryStream.of(mockResultSet(columnNames, data));
@@ -67,6 +98,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
     }
   }
 
+  @Deprecated //Use doMockResultSet instead
   public static Stubber doMockQueryStream(final String[] columnNames, final Object[][] data) {
     return doAnswer(invocation -> mockQueryStream(columnNames, data));
   }
