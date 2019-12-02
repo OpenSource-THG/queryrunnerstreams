@@ -1,11 +1,15 @@
 package com.thehutgroup.queryrunnerstreams;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.stream.BaseStream;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class ClosableStreamInvocationHandler<T> implements InvocationHandler {
@@ -13,7 +17,7 @@ public class ClosableStreamInvocationHandler<T> implements InvocationHandler {
   private final Stream<T> base;
   private final Runnable onClose;
 
-  public ClosableStreamInvocationHandler(final Stream<T> base, final Runnable onClose) {
+  private ClosableStreamInvocationHandler(final Stream<T> base, final Runnable onClose) {
     this.base = base;
     this.onClose = onClose;
   }
@@ -31,7 +35,11 @@ public class ClosableStreamInvocationHandler<T> implements InvocationHandler {
 
       // If it returns another type of stream, fully evaluate the stream (closing the connection)
       if (BaseStream.class.isAssignableFrom(method.getReturnType())) {
-        return method.invoke(evaluateStream(), args);
+        try {
+          return evaluateStream((BaseStream) method.invoke(base, args));
+        } finally {
+          close();
+        }
       }
 
       // Otherwise, evaluate the answer, then close the stream
@@ -49,12 +57,32 @@ public class ClosableStreamInvocationHandler<T> implements InvocationHandler {
     }
   }
 
-  private Stream<T> evaluateStream() {
-    try {
-      return base.collect(Collectors.toList()).stream();
-    } finally {
-      close();
+  private BaseStream evaluateStream(final BaseStream stream) {
+    if (IntStream.class.isAssignableFrom(stream.getClass())) {
+      return evaluateStream((IntStream) stream);
     }
+
+    if (LongStream.class.isAssignableFrom(stream.getClass())) {
+      return evaluateStream((LongStream) stream);
+    }
+
+    if (DoubleStream.class.isAssignableFrom(stream.getClass())) {
+      return evaluateStream((DoubleStream) stream);
+    }
+
+    throw new RuntimeSQLException("Unable to handle a BaseStream of type " + stream.getClass());
+  }
+
+  private IntStream evaluateStream(final IntStream stream) {
+    return stream.boxed().collect(Collectors.toList()).stream().mapToInt(Integer::intValue);
+  }
+
+  private LongStream evaluateStream(final LongStream stream) {
+    return stream.boxed().collect(Collectors.toList()).stream().mapToLong(Long::longValue);
+  }
+
+  private DoubleStream evaluateStream(final DoubleStream stream) {
+    return stream.boxed().collect(Collectors.toList()).stream().mapToDouble(Double::doubleValue);
   }
 
   private void close() {
