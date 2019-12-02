@@ -5,6 +5,7 @@ import static org.hamcrest.core.Is.is;
 
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +31,7 @@ class ClosableStreamInvocationHandlerTest {
         .filter(x -> x % 6 == 0)
         .findAny();
 
-    assertThat(closed, is(true));
+    assertThat(isClosed(), is(true));
     assertThat(value, is(Optional.of(6)));
   }
 
@@ -44,21 +45,31 @@ class ClosableStreamInvocationHandlerTest {
         .map(Object::toString)
         .collect(Collectors.joining());
 
-    assertThat(closed, is(true));
+    assertThat(isClosed(), is(true));
     assertThat(value, is("246"));
   }
 
   @Test
-  @DisplayName("Check that converting to an IntStream closes the connection")
-  void testNoOtherStreams() {
+  @DisplayName("Check that converting to an IntStream closes the connection, after processing")
+  void testClosedAfterEvaluation() {
+
+    final AtomicBoolean wasAlreadyClosed = new AtomicBoolean(false);
 
     OptionalInt value = ClosableStreamInvocationHandler
         .wrap(Stream.of(1, 2, 3), this::close)
-        .mapToInt(x -> x * 2)
+        .mapToInt(x -> {
+          wasAlreadyClosed.set(isClosed());
+          return x * 2;
+        })
         .findFirst();
 
-    assertThat(closed, is(true));
+    assertThat(isClosed(), is(true));
+    assertThat(wasAlreadyClosed.get(), is(false));
     assertThat(value, is(OptionalInt.of(2)));
+  }
+
+  private boolean isClosed() {
+    return closed;
   }
 
   private void close() {
