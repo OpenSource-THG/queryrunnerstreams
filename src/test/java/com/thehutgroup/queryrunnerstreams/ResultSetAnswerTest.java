@@ -5,6 +5,7 @@ import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.mockResultSet;
 import static com.thehutgroup.queryrunnerstreams.ResultSetAnswer.withMockResultSet;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -190,6 +191,28 @@ class ResultSetAnswerTest {
         .collect(Collectors.toList());
 
     assertThat(actualStudents, is(expectedStudents));
+  }
+
+  @Test
+  @DisplayName("Ensure that mock result set reacts as expect if it is closed")
+  void testMockResultSetActsAsExpectedWhenClosed() throws SQLException {
+    NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
+
+    doMockResultSet(
+        new String[]{"Id", "Name", "Grade"},
+        new Object[][]{
+            { 1, "Steve", "A" },
+            { 2, "Chris", "D" },
+            { 3, "Bob",   "B" },
+            { 4, "John",  "A" }}).when(queryRunner).stream(SQL_QUERY);
+
+    RuntimeSQLException ex = assertThrows(RuntimeSQLException.class, () -> queryRunner
+        .stream(SQL_QUERY)
+        .findFirst() //This should be an Optional<SqlRow> which is now closed
+        .map(row -> row.getInt("Id"))
+        .orElse(-1));
+
+    assertThat(ex.getMessage(), is("Result set is closed"));
   }
 
   private static class Student {

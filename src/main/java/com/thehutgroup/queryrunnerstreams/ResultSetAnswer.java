@@ -60,7 +60,13 @@ public class ResultSetAnswer<T> implements Answer<T> {
         return (T) list;
 
       case "stream":
-        return (T) QueryStream.of(rs);
+        return (T) QueryStream.of(rs, () -> {
+          try {
+            rs.close();
+          } catch (SQLException ex) {
+            throw new RuntimeSQLException(ex);
+          }
+        });
 
       default: //Methods based off query.
         return Stream.of(invocation.getArguments())
@@ -108,6 +114,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
     private final Map<String, Integer> columnIndices;
     private final Object[][] data;
     private int rowIndex;
+    private boolean closed = false;
 
     private MockResultSet(final String[] columnNames, final Object[][] data) {
       this.columnIndices = IntStream.range(0, columnNames.length).boxed()
@@ -122,6 +129,12 @@ public class ResultSetAnswer<T> implements Answer<T> {
 
         // Mock rs.next()
         doAnswer(invocation -> ++rowIndex < data.length).when(rs).next();
+
+        // Mock rs.close()
+        doAnswer(invocation -> {
+          close();
+          return null;
+        }).when(rs).close();
 
         // Mock rs.getObject, getString etc
         doAnswer(this::getValue).when(rs).getObject(any());
@@ -147,7 +160,12 @@ public class ResultSetAnswer<T> implements Answer<T> {
       return invocation -> (R) getValue(invocation);
     }
 
-    private Object getValue(final InvocationOnMock invocation) {
+    private Object getValue(final InvocationOnMock invocation) throws SQLException {
+
+      if (isClosed()) {
+        throw new SQLException("Result set is closed");
+      }
+
       Object arg = invocation.getArgument(0);
       if (arg instanceof String) {
         return getValue((String) arg);
@@ -162,6 +180,17 @@ public class ResultSetAnswer<T> implements Answer<T> {
 
     private Object getValue(final int columnIndex) {
       return data[rowIndex][columnIndex - 1];
+    }
+
+    private boolean isClosed() {
+      return closed;
+    }
+
+    private void close() throws SQLException {
+      if (closed) {
+        throw new SQLException("Result set has already been closed");
+      }
+      closed = true;
     }
   }
 }
