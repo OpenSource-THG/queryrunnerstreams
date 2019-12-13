@@ -123,7 +123,7 @@ class NamedParameterParserTest {
 
   @Test
   @DisplayName("Check that passing in something that is not a collection fails as a batch param")
-  void batchUsageWithoutCollection() throws SQLException {
+  void batchUsageWithoutCollection() {
     String sql = "SELECT * FROM Table WHERE ColA = :val1 AND ColB IN (:val2[]) AND ColC = :val3";
 
     Map<String, Object> params = new HashMap<>();
