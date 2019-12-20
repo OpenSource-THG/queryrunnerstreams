@@ -1,0 +1,6 @@
+ownership:
+  team: Engagement
+
+staticanalysis:
+  instance: sonarqube.io.thehut.local
+  key: com.thehutgroup:queryrunnerstreams
