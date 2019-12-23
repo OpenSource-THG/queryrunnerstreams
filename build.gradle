@@ -21,7 +21,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-  team = 'web-platform'
+  team = 'engagement'
 
   commonsDbUtilsVersion = '1.7'
   engagementCheckstyleVersion = '1.2.1'
