@@ -95,20 +95,6 @@ public class ResultSetAnswer<T> implements Answer<T> {
     return doAnswer(new ResultSetAnswer(columnNames, data));
   }
 
-  @Deprecated
-  public static Stream<SqlRow> mockQueryStream(final String[] columnNames, final Object[][] data) {
-    try {
-      return QueryStream.of(mockResultSet(columnNames, data));
-    } catch (SQLException ex) {
-      throw new RuntimeSQLException(ex);
-    }
-  }
-
-  @Deprecated //Use doMockResultSet instead
-  public static Stubber doMockQueryStream(final String[] columnNames, final Object[][] data) {
-    return doAnswer(invocation -> mockQueryStream(columnNames, data));
-  }
-
   private static class MockResultSet {
 
     private final Map<String, Integer> columnIndices;
@@ -151,7 +137,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
 
         return rs;
       } catch (SQLException ex) {
-        throw new RuntimeException(ex);
+        throw new RuntimeSQLException(ex);
       }
     }
 

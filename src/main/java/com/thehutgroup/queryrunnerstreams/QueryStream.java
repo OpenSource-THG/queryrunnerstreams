@@ -14,6 +14,10 @@ import java.util.stream.StreamSupport;
 
 public class QueryStream {
 
+  //Hide the implicit public constructor
+  private QueryStream() {
+  }
+
   public static Stream<SqlRow> of(final ResultSet rs) throws SQLException {
     return of(rs, null);
   }
