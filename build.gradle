@@ -21,8 +21,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-  team = 'engagement'
-  
+  team = 'web-platform'
+
   commonsDbUtilsVersion = '1.7'
   engagementCheckstyleVersion = '1.2.1'
   h2DatabaseVersion = '1.4.200'
