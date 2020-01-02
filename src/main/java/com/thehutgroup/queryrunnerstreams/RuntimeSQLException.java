@@ -3,7 +3,7 @@ package com.thehutgroup.queryrunnerstreams;
 import java.sql.SQLException;
 
 public class RuntimeSQLException extends RuntimeException {
-  private SQLException parent;
+  private final SQLException parent;
 
   public RuntimeSQLException(final SQLException ex) {
     super(ex.getMessage(), ex);
@@ -22,18 +22,22 @@ public class RuntimeSQLException extends RuntimeException {
     return parent;
   }
 
+  @Override
   public String getMessage() {
     return parent.getMessage();
   }
 
+  @Override
   public String getLocalizedMessage() {
     return parent.getLocalizedMessage();
   }
 
+  @Override
   public Throwable getCause() {
     return parent.getCause();
   }
 
+  @Override
   public String toString() {
     return parent.toString();
   }

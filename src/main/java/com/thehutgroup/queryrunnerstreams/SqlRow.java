@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 public class SqlRow {
 
@@ -19,22 +20,41 @@ public class SqlRow {
   }
 
   public <T> T get(final String columnLabel, final Class<T> clazz) {
-    return get(() -> rs.getObject(columnLabel), clazz);
+    return get(
+        () -> rs.getObject(columnLabel),
+        intermediateClazz -> rs.getObject(columnLabel, intermediateClazz),
+        clazz);
   }
 
   //Note: these indices start at 1
   public <T> T get(final int columnIndex, final Class<T> clazz) {
-    return get(() -> rs.getObject(columnIndex), clazz);
+    return get(
+        () -> rs.getObject(columnIndex),
+        intermediateClazz -> rs.getObject(columnIndex, intermediateClazz),
+        clazz);
   }
 
-  //Note: these indices start at 1
   @SuppressFBWarnings("URV_UNRELATED_RETURN_VALUES")
-  private <T> T get(final SafeSQLSupplier<Object> supplier, final Class<T> clazz) {
+  private <T> T get(
+      final SafeSQLSupplier<Object> supplier,
+      final SafeSQLFunction<Class<?>, Object> intermediateSupplier,
+      final Class<T> clazz) {
     try {
       switch (clazz.getName()) {
         case "java.time.Instant":
-          Timestamp timestamp = (Timestamp) supplier.get();
+          Timestamp timestamp = (Timestamp) intermediateSupplier.apply(Timestamp.class);
           return timestamp == null ? null : (T) timestamp.toInstant();
+
+        case "java.time.LocalDateTime":
+          try {
+            //Some SQL Drivers (namely SQL Server 7.1.0+) can get a LocalDateTime from
+            // the database directly, so lets try and do that
+            return (T) intermediateSupplier.apply(clazz);
+          } catch (RuntimeSQLException ex) {
+            //Failing that, get a Timestamp and convert it so LocalDateTime using Javas clock
+            Timestamp localTimestamp = (Timestamp) intermediateSupplier.apply(Timestamp.class);
+            return localTimestamp == null ? null : (T) localTimestamp.toLocalDateTime();
+          }
 
         default:
           return (T) supplier.get();
@@ -59,5 +79,9 @@ public class SqlRow {
 
   public Instant getInstant(final String columnLabel) {
     return get(columnLabel, Instant.class);
+  }
+
+  public LocalDateTime getLocalDateTime(final String columnLabel) {
+    return get(columnLabel, LocalDateTime.class);
   }
 }
