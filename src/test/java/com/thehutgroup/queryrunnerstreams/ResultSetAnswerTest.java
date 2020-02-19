@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -88,7 +87,6 @@ class ResultSetAnswerTest {
 
   @Test
   @DisplayName("Test using when().thenAnswer(withMockResultSet())")
-  @Disabled
   void whenDoAnswerWithMockResultSetTest() throws SQLException {
 
     NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
@@ -224,7 +222,7 @@ class ResultSetAnswerTest {
   }
 
   @Test
-  @DisplayName("Ensure that mock result set reacts as expect if it is closed")
+  @DisplayName("Ensure that mock result set reacts as expected if it is closed")
   void testMockResultSetActsAsExpectedWhenClosed() throws SQLException {
     NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
 
