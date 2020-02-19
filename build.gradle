@@ -7,7 +7,7 @@ buildscript {
   }
 
   dependencies {
-    classpath('thg:thg-gradle-plugin:2.3.+')
+    classpath('thg:thg-gradle-plugin:2.5.+')
   }
 }
 

@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -189,6 +190,35 @@ class ResultSetAnswerTest {
         .collect(Collectors.toList());
 
     assertThat(actualStudents, is(expectedStudents));
+  }
+
+  @Test
+  @DisplayName("Test using doMockResultSet().when() on stream twice")
+  void testDoMockQueryStreamWithEmptyResultTwice() throws SQLException {
+    NamedParameterQueryRunner queryRunner = mock(NamedParameterQueryRunner.class);
+
+    String key = "57";
+    doMockResultSet(
+        new String[]{"Id", "Name", "Grade"},
+        new Object[][]{ }).when(queryRunner).stream(SQL_QUERY, key);
+
+    Optional<Student> actualStudents = queryRunner.stream(SQL_QUERY, key)
+        .map(row -> new Student(
+            row.getInt("Id"),
+            row.getString("Name"),
+            row.getString("Grade")))
+        .findAny();
+
+    assertThat(actualStudents, is(Optional.empty()));
+
+    Optional<Student> actualStudents2 = queryRunner.stream(SQL_QUERY, key)
+        .map(row -> new Student(
+            row.getInt("Id"),
+            row.getString("Name"),
+            row.getString("Grade")))
+        .findAny();
+
+    assertThat(actualStudents2, is(Optional.empty()));
   }
 
   @Test
