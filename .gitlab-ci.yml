@@ -1,6 +1,6 @@
 check:
   script:
-    - ./gradlew clean check --refresh-dependencies
+    - ./gradlew --no-daemon --refresh-dependencies clean check
   artifacts:
     paths:
       - build/reports/checkstyle/*.html
