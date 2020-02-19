@@ -86,7 +86,7 @@ public class SqlRow {
     return get(columnLabel, Instant.class);
   }
 
-  public Instant getInstantFromBigInt(final String columnLabel) {
+  public Instant getInstantFromLong(final String columnLabel) {
     Long timestamp = get(columnLabel, Long.class);
     return timestamp == null ? null : Instant.ofEpochMilli(timestamp);
   }
