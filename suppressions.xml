@@ -6,4 +6,5 @@
 
 <suppressions>
     <suppress files="[\\/]src[\\/]test[\\/].*" checks="JavadocType" />
+    <suppress files="[\\/]build[\\/]generated[\\/].*" checks=".*" />
 </suppressions>

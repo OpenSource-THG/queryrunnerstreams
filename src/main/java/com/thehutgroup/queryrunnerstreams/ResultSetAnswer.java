@@ -12,9 +12,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -25,19 +27,21 @@ import org.mockito.stubbing.Stubber;
 
 public class ResultSetAnswer<T> implements Answer<T> {
 
-  private final ResultSet rs;
+  private final Supplier<ResultSet> resultSetSupplier;
 
   private ResultSetAnswer(final ResultSet rs) {
-    this.rs = rs;
+    this.resultSetSupplier = () -> rs;
   }
 
   private ResultSetAnswer(final String[] columnNames, final Object[][] data) {
-    this.rs = new MockResultSet(columnNames, data).build();
+    this.resultSetSupplier = new MockResultSet(columnNames, data)::build;
   }
 
   @Override
   @SuppressFBWarnings("URV_INHERITED_METHOD_WITH_RELATED_TYPES")
   public T answer(final InvocationOnMock invocation) throws Throwable {
+
+    ResultSet rs = resultSetSupplier.get();
 
     switch (invocation.getMethod().getName()) {
       case "queryForList":
@@ -114,7 +118,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
     private final Map<String, Integer> columnIndices;
     private final Object[][] data;
     private int rowIndex;
-    private boolean closed = false;
+    private Map<ResultSet, Boolean> closed = new HashMap<>();
 
     private MockResultSet(final String[] columnNames, final Object[][] data) {
       this.columnIndices = IntStream.range(0, columnNames.length).boxed()
@@ -131,10 +135,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
         doAnswer(invocation -> ++rowIndex < data.length).when(rs).next();
 
         // Mock rs.close()
-        doAnswer(invocation -> {
-          close();
-          return null;
-        }).when(rs).close();
+        doAnswer(this::close).when(rs).close();
 
         // Mock rs.getObject, getString etc
         doAnswer(this::getValue).when(rs).getObject(any());
@@ -149,6 +150,9 @@ public class ResultSetAnswer<T> implements Answer<T> {
         doReturn(columnIndices.size()).when(metadata).getColumnCount();
         doReturn(metadata).when(rs).getMetaData();
 
+        //Open this resultSet:
+        closed.put(rs, false);
+
         return rs;
       } catch (SQLException ex) {
         throw new RuntimeException(ex);
@@ -162,7 +166,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
 
     private Object getValue(final InvocationOnMock invocation) throws SQLException {
 
-      if (isClosed()) {
+      if (isClosed(invocation)) {
         throw new SQLException("Result set is closed");
       }
 
@@ -182,15 +186,21 @@ public class ResultSetAnswer<T> implements Answer<T> {
       return data[rowIndex][columnIndex - 1];
     }
 
-    private boolean isClosed() {
-      return closed;
+    private boolean isClosed(final ResultSet mock) {
+      return closed.getOrDefault(mock, true);
     }
 
-    private void close() throws SQLException {
-      if (closed) {
+    private boolean isClosed(final InvocationOnMock invocation) {
+      return isClosed((ResultSet) invocation.getMock());
+    }
+
+    private Object close(final InvocationOnMock invocation) throws SQLException {
+      final ResultSet mock = (ResultSet) invocation.getMock();
+      if (isClosed(mock)) {
         throw new SQLException("Result set has already been closed");
       }
-      closed = true;
+      closed.put(mock, true);
+      return null;
     }
   }
 }
