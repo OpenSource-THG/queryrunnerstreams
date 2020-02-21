@@ -34,6 +34,7 @@ public class SqlRow {
         clazz);
   }
 
+  @SuppressWarnings("unchecked")
   @SuppressFBWarnings("URV_UNRELATED_RETURN_VALUES")
   private <T> T get(
       final SafeSQLSupplier<Object> supplier,
@@ -46,15 +47,7 @@ public class SqlRow {
           return timestamp == null ? null : (T) timestamp.toInstant();
 
         case "java.time.LocalDateTime":
-          try {
-            //Some SQL Drivers (namely SQL Server 7.1.0+) can get a LocalDateTime from
-            // the database directly, so lets try and do that
-            return (T) intermediateSupplier.apply(clazz);
-          } catch (RuntimeSQLException ex) {
-            //Failing that, get a Timestamp and convert it so LocalDateTime using Javas clock
-            Timestamp localTimestamp = (Timestamp) intermediateSupplier.apply(Timestamp.class);
-            return localTimestamp == null ? null : (T) localTimestamp.toLocalDateTime();
-          }
+          return (T) getLocalDateTimeFromSql(intermediateSupplier);
 
         default:
           return (T) supplier.get();
@@ -83,5 +76,19 @@ public class SqlRow {
 
   public LocalDateTime getLocalDateTime(final String columnLabel) {
     return get(columnLabel, LocalDateTime.class);
+  }
+
+  private LocalDateTime getLocalDateTimeFromSql(
+      final SafeSQLFunction<Class<?>, Object> intermediateSupplier)
+      throws SQLException {
+    try {
+      //Some SQL Drivers (namely SQL Server 7.1.0+) can get a LocalDateTime from
+      // the database directly, so lets try and do that
+      return (LocalDateTime) intermediateSupplier.apply(LocalDateTime.class);
+    } catch (SQLException | RuntimeSQLException ex) {
+      //Failing that, get a Timestamp and convert it so LocalDateTime using Javas clock
+      Timestamp localTimestamp = (Timestamp) intermediateSupplier.apply(Timestamp.class);
+      return localTimestamp == null ? null : localTimestamp.toLocalDateTime();
+    }
   }
 }
