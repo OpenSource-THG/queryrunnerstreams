@@ -66,12 +66,22 @@ public class SqlRow {
     return value == null ? 0 : value;
   }
 
+  public long getLong(final String columnLabel) {
+    Long value = get(columnLabel, Long.class);
+    return value == null ? 0 : value;
+  }
+
   public boolean getBoolean(final String columnLabel) {
     return Boolean.TRUE.equals(get(columnLabel, Boolean.class));
   }
 
   public Instant getInstant(final String columnLabel) {
     return get(columnLabel, Instant.class);
+  }
+
+  public Instant getInstantFromLong(final String columnLabel) {
+    Long timestamp = get(columnLabel, Long.class);
+    return timestamp == null ? null : Instant.ofEpochMilli(timestamp);
   }
 
   public LocalDateTime getLocalDateTime(final String columnLabel) {
