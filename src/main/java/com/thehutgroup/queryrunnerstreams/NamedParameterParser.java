@@ -23,10 +23,11 @@ class NamedParameterParser {
     while (matcher.find()) {
       final String key = matcher.group(1).substring(1);
       final boolean batch = matcher.group(2) != null;
-      final Object value = params.get(key);
-      if (value == null) {
+      if (!params.containsKey(key)) {
         throw new SQLException("Parameter :" + key + " could not be matched");
       }
+
+      final Object value = params.get(key);
 
       if (batch) {
         if (!(value instanceof Collection<?>)) {

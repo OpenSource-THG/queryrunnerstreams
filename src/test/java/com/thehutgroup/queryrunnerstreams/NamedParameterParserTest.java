@@ -61,7 +61,7 @@ class NamedParameterParserTest {
 
   @Test
   @DisplayName("Check unused parameters are fine")
-  void runusedParams() throws SQLException {
+  void unusedParams() throws SQLException {
     String sql = "SELECT * FROM Table WHERE ColA = :value1 AND ColB = :value2 AND ColC = :value1";
 
     Map<String, Object> params = new HashMap<>();
@@ -78,6 +78,25 @@ class NamedParameterParserTest {
     assertThat(result.getParams()[0], is(7));
     assertThat(result.getParams()[1], is(5));
     assertThat(result.getParams()[2], is(7));
+  }
+
+  @Test
+  @DisplayName("Check null parameters are fine")
+  void nullParams() throws SQLException {
+    String sql = "SELECT * FROM Table WHERE ColA = :value1 AND ColB = :value2 AND ColC = :value1";
+
+    Map<String, Object> params = new HashMap<>();
+    params.put("value1", null);
+    params.put("value2", 5);
+
+    SqlAndParamsList result = parser.parseNamedParameters(sql, params);
+
+    assertThat(result.getSql(),
+        is("SELECT * FROM Table WHERE ColA = ? AND ColB = ? AND ColC = ?"));
+    assertThat(result.getParams().length, is(3));
+    assertThat(result.getParams()[0], is(nullValue()));
+    assertThat(result.getParams()[1], is(5));
+    assertThat(result.getParams()[2], is(nullValue()));
   }
 
   @Test
