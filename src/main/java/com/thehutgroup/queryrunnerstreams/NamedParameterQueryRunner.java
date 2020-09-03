@@ -25,8 +25,7 @@ public class NamedParameterQueryRunner extends QueryRunner {
     parser = new NamedParameterParser();
   }
 
-  public <T> T query(
-      final String sql, final ResultSetHandler<T> rsh, final Map<String, Object> params)
+  public <T> T query(final String sql, final ResultSetHandler<T> rsh, final Map<String, ?> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
@@ -59,7 +58,7 @@ public class NamedParameterQueryRunner extends QueryRunner {
   public <T> List<T> queryForList(
       final String sql,
       final SafeSQLFunction<SqlRow, T> rowMapper,
-      final Map<String, Object> params)
+      final Map<String, ?> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
@@ -96,7 +95,7 @@ public class NamedParameterQueryRunner extends QueryRunner {
   }
 
   public <T> T queryForObject(
-      final String sql, final Class<T> clazz, final Map<String, Object> params)
+      final String sql, final Class<T> clazz, final Map<String, ?> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
@@ -104,7 +103,7 @@ public class NamedParameterQueryRunner extends QueryRunner {
     return queryForObject(simple.getSql(), clazz, simple.getParams());
   }
 
-  public int update(final String sql, final Map<String, Object> params)
+  public int update(final String sql, final Map<String, ?> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
@@ -112,7 +111,7 @@ public class NamedParameterQueryRunner extends QueryRunner {
     return update(simple.getSql(), simple.getParams());
   }
 
-  public int execute(final String sql, final Map<String, Object> params)
+  public int execute(final String sql, final Map<String, ?> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);
@@ -120,7 +119,7 @@ public class NamedParameterQueryRunner extends QueryRunner {
     return execute(simple.getSql(), simple.getParams());
   }
 
-  public Stream<SqlRow> stream(final String sql, final Map<String, Object> params)
+  public Stream<SqlRow> stream(final String sql, final Map<String, ?> params)
       throws SQLException {
 
     SqlAndParamsList simple = parser.parseNamedParameters(sql, params);

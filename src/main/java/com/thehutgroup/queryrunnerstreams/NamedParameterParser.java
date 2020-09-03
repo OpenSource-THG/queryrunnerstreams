@@ -11,9 +11,9 @@ import java.util.regex.Pattern;
 
 class NamedParameterParser {
 
-  private static final Pattern PATTERN = Pattern.compile("(:[a-zA-Z0-9\\-]+)(\\[\\])?");
+  private static final Pattern PATTERN = Pattern.compile("(:[a-zA-Z][a-zA-Z0-9\\-]*)(\\[\\])?");
 
-  SqlAndParamsList parseNamedParameters(final String sql, final Map<String, Object> params)
+  SqlAndParamsList parseNamedParameters(final String sql, final Map<String, ?> params)
       throws SQLException {
 
     final StringBuffer resultSql = new StringBuffer();
