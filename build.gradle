@@ -15,7 +15,6 @@ plugins {
   id "com.adarshr.test-logger" version "2.0.0"
 }
 
-apply plugin: 'com.thehut.thg-gradle-plugin'
 apply plugin: 'java'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -32,6 +31,9 @@ ext {
   mockitoVersion = '3.2.4'
   spotbugsAnnotationsVersion = '3.1.12'
 }
+
+apply plugin: 'com.thehut.thg-gradle-plugin'
+
 
 dependencies {
 
