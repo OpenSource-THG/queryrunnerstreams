@@ -15,7 +15,6 @@ plugins {
   id "com.adarshr.test-logger" version "2.0.0"
 }
 
-apply plugin: 'java'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -52,23 +51,6 @@ dependencies {
   //Test database
   testImplementation("com.h2database:h2:${h2DatabaseVersion}")
   testImplementation("com.zaxxer:HikariCP:${hikariVersion}")
-}
-
-artifactory {
-	publish {
-		defaults {
-			publications('mavenJava')
-		}
-	}
-}
-
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-      from components.java
-			artifact jar
-		}
-	}
 }
 
 test {
