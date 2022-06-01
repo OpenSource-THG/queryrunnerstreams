@@ -25,7 +25,3 @@ dist/
 nbdist/
 .nb-gradle/
 
-### THG Gradle Plugin ###
-checkstyle.xml
-spotBugsExcludes.xml
-suppressions.xml

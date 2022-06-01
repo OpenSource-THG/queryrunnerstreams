@@ -1,20 +1,26 @@
 package com.thehutgroup.queryrunnerstreams;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Map;
 
 public class SqlRow {
 
-  private ResultSet rs;
+  private final ResultSet rs;
 
   SqlRow(final ResultSet rs) {
     this.rs = rs;
   }
 
+  @SuppressFBWarnings("EI_EXPOSE_REP") // rs cannot be cloned as the driver can go back to the db
   public ResultSet getResultSet() {
     return rs;
   }

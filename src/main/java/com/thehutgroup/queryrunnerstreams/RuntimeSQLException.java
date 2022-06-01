@@ -1,10 +1,13 @@
 package com.thehutgroup.queryrunnerstreams;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.sql.SQLException;
 
 public class RuntimeSQLException extends RuntimeException {
   private final SQLException parent;
 
+  @SuppressFBWarnings("EI_EXPOSE_REP")
   public RuntimeSQLException(final SQLException ex) {
     super(ex.getMessage(), ex);
     parent = ex;
@@ -19,7 +22,7 @@ public class RuntimeSQLException extends RuntimeException {
   }
 
   public SQLException getParent() {
-    return parent;
+    return new SQLException(parent.getMessage(), parent.getCause());
   }
 
   @Override

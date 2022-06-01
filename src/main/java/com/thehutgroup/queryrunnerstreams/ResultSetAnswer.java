@@ -38,7 +38,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
   }
 
   @Override
-  @SuppressFBWarnings("URV_INHERITED_METHOD_WITH_RELATED_TYPES")
+  @SuppressFBWarnings({"URV_INHERITED_METHOD_WITH_RELATED_TYPES", "THROWS_METHOD_THROWS_CLAUSE_THROWABLE"})
   public T answer(final InvocationOnMock invocation) throws Throwable {
 
     ResultSet rs = resultSetSupplier.get();
@@ -99,6 +99,7 @@ public class ResultSetAnswer<T> implements Answer<T> {
     return doAnswer(new ResultSetAnswer(columnNames, data));
   }
 
+  @SuppressFBWarnings
   private static class MockResultSet {
 
     private final Map<String, Integer> columnIndices;

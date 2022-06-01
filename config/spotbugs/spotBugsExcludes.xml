@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <!-- IntelliJs default hashCode method triggers this warning -->
+    <Method name="hashCode" />
+    <Bug code="USBR" />
+  </Match>
+  <Match>
+    <!-- Allow spring endpoints -->
+    <Bug pattern="SPRING_ENDPOINT" />
+  </Match>
+  <Match>
+    <!-- Allow Jax-RS endpoints -->
+    <Bug pattern="JAXRS_ENDPOINT" />
+  </Match>
+  <Match>
+    <!-- We want to load config files from a provided param for dev in Spark Apps -->
+    <Class name="~.+AppConfiguration" />
+    <Bug pattern="PATH_TRAVERSAL_IN" />
+  </Match>
+  <Match>
+    <!-- This issue is being managed in Themis Monitoring directly -->
+    <Bug pattern="CRLF_INJECTION_LOGS" />
+  </Match>
+  <Match>
+    <!-- Don't require a default clause in switch statements -->
+    <Bug pattern="SF_SWITCH_NO_DEFAULT" />
+  </Match>
+  <Match>
+    <!-- Allow fallthroughs in switch statements -->
+    <Bug pattern="SF_SWITCH_FALLTHROUGH" />
+  </Match>
+  <Match>
+    <!-- Unneeded boxing of bools often results in more readable code -->
+    <Bug pattern="NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" />
+  </Match>
+  <Match>
+    <!-- This check can be a bit agressive, don't include low priority warnings -->
+    <Bug pattern="SEO_SUBOPTIMAL_EXPRESSION_ORDER" />
+    <Condifence value="3" />
+  </Match>
+  <Match>
+    <!-- Don't require every class to implement a toString method -->
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING" />
+  </Match>
+  <Match>
+    <!-- Sometimes we like to declare a runtime exception to make it obvious that a nested call may thow something -->
+    <Bug pattern="DRE_DECLARED_RUNTIME_EXCEPTION" />
+  </Match>
+  <Match>
+    <!-- Don't require exceptions to implement equals methods -->
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS" />
+    <Class name="~.+(Exception|Error)$" />
+  </Match>
+  <Match>
+    <!-- Allow exceptions with fixed strings -->
+    <Bug pattern="WEM_WEAK_EXCEPTION_MESSAGING" />
+  </Match>
+  <Match>
+    <!-- Allow writing to static fields -->
+    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+  </Match>
+  <Match>
+    <!-- Allow calling the same method twice to avoid unneeded intermediary variables -->
+    <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
+  </Match>
+  <Match>
+    <!-- Allows for extension of methods which at present only need to be private -->
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD" />
+  </Match>
+  <Match>
+    <!-- Allow exception softening for use in lambdas -->
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CHECKED" />
+  </Match>
+  <Match>
+    <!-- Allow exception softening for use in lambdas -->
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_HAS_CHECKED" />
+  </Match>
+  <Match>
+    <!-- Allow exception softening for use in lambdas -->
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" />
+  </Match>
+  <Match>
+    <!-- Allow for conditional code based on what type of Object we have -->
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING" />
+  </Match>
+  <Match>
+    <!-- Allow concatenation in logs -->
+    <Bug pattern="LO_APPENDED_STRING_IN_FORMAT_STRING" />
+  </Match>
+  <Match>
+    <!-- Allow null checks even when findbugs things they aren't needed -->
+    <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" />
+  </Match>
+  <Match>
+    <!-- Don't require all methods called by constructor to be final -->
+    <Bug pattern="PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS" />
+  </Match>
+  <Match>
+    <!-- Don't require us to figure out the size of collections on creation -->
+    <Bug pattern="PSC_PRESIZE_COLLECTIONS" />
+  </Match>
+  <Match>
+    <!-- Don't always require secure random -->
+    <Bug pattern="PREDICTABLE_RANDOM" />
+  </Match>
+  <Match>
+    <!-- This is required in tests, ideally we would only exclude these in tests -->
+    <Bug pattern="WI_MANUALLY_ALLOCATING_AN_AUTOWIRED_BEAN" />
+  </Match>
+  <Match>
+    <!-- Don't require @Nullable annotations -->
+    <Bug pattern="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE" />
+  </Match>
+  <Match>
+    <!-- Just because headers can be edited doesn't make them unusable -->
+    <Bug pattern="SERVLET_HEADER" />
+  </Match>
+  <Match>
+    <!-- Don't worry too much about needless unboxing of booleans, more readable code is worth it -->
+    <Bug pattern="NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" />
+  </Match>
+  <Match>
+    <!-- Allow back to back filters in Streams as can be more readable -->
+    <Bug pattern="FII_COMBINE_FILTERS" />
+  </Match>
+  <Match>
+    <!-- Allow the identity function to be defined as needed, it sometimes makes the code clearer -->
+    <Bug pattern="FII_USE_FUNCTION_IDENTITY" />
+  </Match>
+  <Match>
+    <!-- Sometimes Optional<Integer> is clearer than OptionalInt, do don't require it -->
+    <Bug pattern="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED" />
+  </Match>
+  <Match>
+    <!-- Allow use of array rather than varargs as sometimes it is appropriate -->
+    <Bug pattern="UVA_USE_VAR_ARGS" />
+  </Match>
+  <Match>
+    <!-- Class Envy is usually caused by transformers or by service layers making heavy use of repository classes -->
+    <Bug pattern="CE_CLASS_ENVY" />
+  </Match>
+  <Match>
+    <!-- It seems like private methods in a private inner class are optimised in the compiler to call the fields directly, causing this alert to fire -->
+    <!-- Eg, if we do privateInnerClassInstance.getField(), the Java compiler converts that to privateInnerClassInstance.field so the method getField() is technically not used -->
+    <!-- See: https://github.com/spotbugs/spotbugs/issues/811 -->
+    <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+  </Match>
+  <Match>
+    <!-- There is a bug in Spotbugs where try with resources triggers this warning -->
+    <!-- It would be good to remove this suppression once the bug is fixed -->
+    <!-- See: https://github.com/spotbugs/spotbugs/issues/756 -->
+    <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" />
+  </Match>
+  <Match>
+    <!-- With Java 15, we have \n within text blocks which may then be used with String format -->
+    <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE" />
+  </Match>
+  <Match>
+    <!-- This rule seems overly restrictive since sometimes we do want to handle the clone method in a specific way -->
+    <Bug pattern="CN_IDIOM_NO_SUPER_CALL" />
+  </Match>
+  <Match>
+    <!-- No issue in have a class implement an interface when some of the methods are provided by the super class -->
+    <Bug pattern="SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR" />
+  </Match>
+  <Match>
+    <!-- No issue with a method returning a constant, sometimes we prefer to have getters for constants rather than accessing them directly -->
+    <Bug pattern="MRC_METHOD_RETURNS_CONSTANT" />
+  </Match>
+  <Match>
+    <!-- These are basically what lambdas are and can be useful -->
+    <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
+  </Match>
+  <Match>
+    <!-- Doesn't allow any case changes -->
+    <Bug pattern="IMPROPER_UNICODE" />
+  </Match>
+  <Match>
+    <!-- Flags Java 16 records. TODO: This will probably be fixed upstream... -->
+    <Bug pattern="EQ_UNUSUAL" />
+  </Match>
+  <Match>
+    <!-- Allow for fields that could be local in test classes -->
+    <Class name="~.+Test$" />
+    <Bug pattern="FCBL_FIELD_COULD_BE_LOCAL" />
+  </Match>
+  <Match>
+    <!-- Allow for return values to be ignored in tests -->
+    <Class name="~.+Test$" />
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" />
+  </Match>
+  <Match>
+    <!-- Allow constant arrays to be created in tests -->
+    <Class name="~.+Test$" />
+    <Bug pattern="SACM_STATIC_ARRAY_CREATED_IN_METHOD" />
+  </Match>
+  <!-- These next three seem to fire a ridiculous amount after upgrading SpotBugs -->
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR" />
+  </Match>
+</FindBugsFilter>

@@ -1,18 +1,13 @@
-buildscript {
-  repositories {
-    maven {
-      url uri('https://artifactory.io.thehut.local/artifactory/plugins-release')
-    }
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath('thg:thg-gradle-plugin:2.8.+')
-  }
-}
-
 plugins {
   id "com.adarshr.test-logger" version "2.0.0"
+  id 'java-library'
+  id 'checkstyle'
+  id 'maven-publish'
+  id "com.github.spotbugs" version "5.0.7"
+}
+
+repositories {
+  mavenCentral()
 }
 
 apply plugin: 'java'
@@ -20,20 +15,18 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-  team = 'engagement'
-
   commonsDbUtilsVersion = '1.7'
   engagementCheckstyleVersion = '1.2.1'
-  h2DatabaseVersion = '1.4.200'
+  h2DatabaseVersion = '2.1.212'
   hamcrestVersion = '2.2'
-  hikariVersion = '3.4.1'
-  junitJupiterVersion = '5.5.2'
-  mockitoVersion = '3.2.4'
-  spotbugsAnnotationsVersion = '3.1.12'
+  hikariVersion = '5.0.1'
+  junitJupiterVersion = '5.8.2'
+  mockitoVersion = '4.5.1'
+  spotbugsAnnotationsVersion = '4.6.0'
 }
 
-apply plugin: 'com.thehut.thg-gradle-plugin'
-
+group 'com.thehutgroup.queryrunnerstreams'
+version = "${version != 'unspecified' ? version : '1.0.0-SNAPSHOT'}"
 
 dependencies {
 
@@ -57,3 +50,5 @@ dependencies {
 test {
   useJUnitPlatform()
 }
+
+spotbugsTest.enabled = false
