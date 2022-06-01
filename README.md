@@ -5,5 +5,3 @@ This results in more readable, easier to write code that is also potentially mor
 
 The second development is that of having a NamedParameter version of a query runner, rather than having to keep track of question marks, you can simply name the parameters you are passing in, and replace the parameter array with a parameter map.
 Additionally, there is the option of passing in lists, for example `SELECT * WHERE id IN (:ids[])` will allow you to pass in a Collection as the ids parameter.
-
-To create a release, we have moved to gitlab ci, so simply merge to master and create a tag.
